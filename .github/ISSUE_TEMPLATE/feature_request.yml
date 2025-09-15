@@ -1,0 +1,28 @@
+---
+name: "Feature request"
+description: "Propose a new idea or improvement"
+title: "[Feature]: "
+labels: ["enhancement"]
+body:
+  - type: checkboxes
+    attributes:
+      label: "Validation"
+      options:
+        - label: "I have searched existing issues to avoid duplicates"
+          required: true
+  - type: textarea
+    attributes:
+      label: "Problem to solve"
+      description: "What problem are you trying to solve?"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Proposed solution"
+      description: "Describe the solution you'd like"
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: "Alternatives considered"
+      description: "Any alternative solutions or features you've considered"
