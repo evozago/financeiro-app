@@ -1,0 +1,60 @@
+name: CI
+
+on:
+  push:
+    branches: [ "main" ]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+      - ".github/**"
+  pull_request:
+    branches: [ "*" ]
+    paths-ignore:
+      - "**/*.md"
+      - "docs/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # Node.js pipeline automatically enables only if package.json exists
+      - name: Setup Node.js
+        if: hashFiles('package.json') != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install deps
+        if: hashFiles('package.json') != ''
+        run: npm ci
+
+      - name: Lint (if present)
+        if: hashFiles('package.json') != ''
+        run: npm run lint --if-present
+
+      - name: Test (if present)
+        if: hashFiles('package.json') != ''
+        run: npm test --if-present
+
+      - name: Build (if present)
+        if: hashFiles('package.json') != ''
+        run: npm run build --if-present
+
+      # Keep pipeline neutral in non-Node repos
+      - name: Finalize
+        if: hashFiles('package.json') == ''
+        run: echo "Basic CI executed (no specific stack detected)."
