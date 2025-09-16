@@ -20,8 +20,12 @@ jobs:
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       
-      - name: Enable auto-merge for minor, patch, and security updates
-        if: ${{ steps.metadata.outputs.update-type == 'version-update:semver-minor' || steps.metadata.outputs.update-type == 'version-update:semver-patch' || steps.metadata.outputs.update-type == 'security' }}
+      - name: Enable auto-merge for all updates (major, minor, patch, and security)
+        if: >-
+          ${{ steps.metadata.outputs.update-type == 'version-update:semver-major' ||
+              steps.metadata.outputs.update-type == 'version-update:semver-minor' ||
+              steps.metadata.outputs.update-type == 'version-update:semver-patch' ||
+              steps.metadata.outputs.update-type == 'security' }}
         uses: peter-evans/enable-pull-request-automerge@v3
         with:
           token: "${{ secrets.GITHUB_TOKEN }}"
