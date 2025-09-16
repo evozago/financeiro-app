@@ -1,0 +1,77 @@
+name: Dependabot Auto-merge Sweeper
+
+on:
+  schedule:
+    # Run hourly
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sweeper:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Enable auto-merge for existing Dependabot PRs
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            // Get all open pull requests authored by dependabot[bot]
+            const { data: pullRequests } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              per_page: 100
+            });
+
+            const dependabotPRs = pullRequests.filter(pr => 
+              pr.user.login === 'dependabot[bot]'
+            );
+
+            console.log(`Found ${dependabotPRs.length} open Dependabot PRs`);
+
+            for (const pr of dependabotPRs) {
+              try {
+                // Check if auto-merge is already enabled
+                const { data: prDetails } = await github.rest.pulls.get({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number
+                });
+
+                if (!prDetails.auto_merge) {
+                  // Enable auto-merge with squash method
+                  await github.graphql(`
+                    mutation EnableAutoMerge($pullRequestId: ID!) {
+                      enablePullRequestAutoMerge(input: {
+                        pullRequestId: $pullRequestId,
+                        mergeMethod: SQUASH
+                      }) {
+                        pullRequest {
+                          id
+                        }
+                      }
+                    }
+                  `, {
+                    pullRequestId: pr.node_id
+                  });
+
+                  console.log(`Enabled auto-merge for PR #${pr.number}: ` + 
+                             `${pr.title}`);
+                } else {
+                  console.log(`Auto-merge already enabled for PR ` + 
+                             `#${pr.number}: ${pr.title}`);
+                }
+              } catch (error) {
+                console.log(`Failed to enable auto-merge for PR ` +
+                           `#${pr.number}: ${error.message}`);
+              }
+            }
+
+            if (dependabotPRs.length === 0) {
+              console.log('No open Dependabot PRs found');
+            }
