@@ -70,6 +70,39 @@ Notas:
 
 URL esperada após o merge: https://evozago.github.io/financeiro-app/
 
+## Supabase em produção (GitHub Pages)
+
+### Desenvolvimento local
+Para desenvolvimento local, crie um arquivo `.env.local` com as variáveis do Supabase:
+
+```bash
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
+Use `.env.example` como base para criar seu arquivo de configuração local.
+
+### Deploy no GitHub Pages
+Para que o build funcione no GitHub Pages, configure as variáveis de ambiente no repositório:
+
+1. **Opção recomendada - Repository Variables:**
+   - Vá em Settings → Secrets and variables → Actions → Variables tab
+   - Adicione `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`
+
+2. **Opção alternativa - Repository Secrets:**
+   - Vá em Settings → Secrets and variables → Actions → Secrets tab  
+   - Adicione `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY`
+
+O workflow de deploy (`.github/workflows/deploy-pages.yml`) já está configurado para usar essas variáveis durante o build, tentando primeiro Variables e depois Secrets como fallback.
+
+### Verificação da conectividade
+Após o deploy, a página https://evozago.github.io/financeiro-app/ mostrará um "Supabase Explorer" que permite:
+- Testar conectividade com qualquer tabela do banco
+- Visualizar até 25 registros de qualquer tabela
+- Verificar se as variáveis de ambiente estão configuradas corretamente
+
+Se as variáveis não estiverem configuradas, será exibida uma mensagem de erro clara indicando quais variáveis estão faltando.
+
 ## Estrutura do projeto
 - `src/` — aplicação React
   - `pages/` e `features/` — telas e módulos (Financeiro, Vendas etc.)
