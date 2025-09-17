@@ -1,16 +1,15 @@
-import { useState } from 'react'
+import SupabaseExplorer from './components/SupabaseExplorer'
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <>
-      <h1>Financeiro App</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-      </div>
+      <header style={{ padding: '20px', borderBottom: '1px solid #ddd' }}>
+        <h1>Financeiro App</h1>
+        <p>Teste de conectividade com Supabase em produção</p>
+      </header>
+      <main>
+        <SupabaseExplorer />
+      </main>
     </>
   )
 }
