@@ -36,6 +36,19 @@ Aplicação web para gestão financeira e comercial de varejo multimarcas. Centr
    ```
 4. Acesse a URL do terminal (geralmente http://localhost:5173).
 
+## Ambiente/Supabase
+O projeto usa Supabase como backend de dados e já está configurado para funcionar em produção (GitHub Pages):
+
+- **Produção**: O arquivo `.env.production` contém as variáveis do Supabase para o deploy do GitHub Pages e está versionado no repositório.
+- **Desenvolvimento local**: Para desenvolvimento local, crie um arquivo `.env` ou `.env.local` com as mesmas chaves `VITE_SUPABASE_URL` e `VITE_SUPABASE_ANON_KEY` (use `.env.example` como base).
+- **Segurança**: O anon key é público por design quando usado no browser. A segurança é garantida pelo RLS (Row Level Security) do Supabase, que deve permanecer habilitado no servidor.
+
+Variáveis de ambiente necessárias:
+```bash
+VITE_SUPABASE_URL=https://your-project-ref.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key-here
+```
+
 ## Build e preview de produção
 Para simular exatamente a publicação no GitHub Pages (base /financeiro-app/):
 ```bash
